@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}{{ room.label }} – Bhavani Residency{% endblock %}
+{% block content %}
+
+{% set pct = ((occupancy / room.capacity) * 100) | round(0) | int if room.capacity > 0 else 0 %}
+{% set status_color = 'danger' if occupancy >= room.capacity else ('warning' if occupancy >= room.capacity * 0.8 else 'success') %}
+
+<div class="d-flex align-items-center mb-4 flex-wrap gap-2">
+    <a href="/floor/{{ room.floor }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Floor {{ room.floor }}
+    </a>
+    <h2 class="fw-bold mb-0 ms-2">
+        <i class="bi bi-door-closed-fill me-2 text-primary"></i>{{ room.label }}
+    </h2>
+    <span class="badge bg-{{ status_color }} fs-6 ms-2">{{ occupancy }}/{{ room.capacity }} occupied</span>
+    {% if occupancy < room.capacity %}
+    <a href="/tenant/add?room_id={{ room.id }}" class="btn btn-primary btn-sm ms-auto">
+        <i class="bi bi-person-plus me-1"></i>Add Student
+    </a>
+    {% else %}
+    <span class="ms-auto badge bg-danger fs-6"><i class="bi bi-x-circle me-1"></i>Room Full</span>
+    {% endif %}
+</div>
+
+<!-- Occupancy bar -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="fw-semibold">Occupancy</span>
+            <span class="text-muted">{{ occupancy }} / {{ room.capacity }} beds</span>
+        </div>
+        <div class="progress" style="height:16px;">
+            <div class="progress-bar bg-{{ status_color }} fw-semibold" style="width:{{ pct }}%;">{{ pct }}%</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tenant Cards -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom d-flex align-items-center">
+        <h5 class="mb-0 fw-semibold"><i class="bi bi-people-fill me-2 text-primary"></i>Students</h5>
+        <span class="ms-auto text-muted small">{{ tenants|length }} member(s)</span>
+    </div>
+    <div class="card-body p-0">
+        {% if tenants %}
+
+        <!-- Accordion of tenant detail cards -->
+        <div class="accordion accordion-flush" id="tenantAccordion">
+        {% for t in tenants %}
+        {% set adv_paid = t.advance_paid or 0 %}
+        {% set adv_rem  = 10000 - adv_paid %}
+        <div class="accordion-item border-bottom">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed py-3" type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#t{{ t.id }}">
+                    <div class="d-flex align-items-center gap-3 w-100 me-3">
+                        <div class="avatar-circle">{{ t.name[0].upper() }}</div>
+                        <div>
+                            <div class="fw-semibold">{{ t.name }}</div>
+                            <div class="small text-muted">
+                                {{ t.college or '—' }}
+                                {% if t.study_year %} · {{ t.study_year }}{% endif %}
+                                {% if t.branch %} · {{ t.branch }}{% endif %}
+                            </div>
+                        </div>
+                        <div class="ms-auto d-flex gap-2 align-items-center">
+                            {% if adv_rem <= 0 %}
+                            <span class="badge bg-success">Advance ✓</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">Pending ₹{{ adv_rem | int }}</span>
+                            {% endif %}
+                            <span class="badge bg-secondary">{{ t.join_date }}</span>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <div id="t{{ t.id }}" class="accordion-collapse collapse"
+                 data-bs-parent="#tenantAccordion">
+                <div class="accordion-body bg-light">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><th class="text-muted small" style="width:40%">Father's Name</th><td>{{ t.father_name or '—' }}</td></tr>
+                                <tr><th class="text-muted small">Village</th><td>{{ t.village or '—' }}</td></tr>
+                                <tr><th class="text-muted small">Mandalam</th><td>{{ t.mandalam or '—' }}</td></tr>
+                                <tr><th class="text-muted small">District</th><td>{{ t.district or '—' }}</td></tr>
+                                <tr><th class="text-muted small">Aadhar No.</th><td>{{ t.aadhar_no or '—' }}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><th class="text-muted small">Student Phone</th><td>{{ t.phone or '—' }}</td></tr>
+                                <tr><th class="text-muted small">Parent Phone</th><td>{{ t.parent_phone or '—' }}</td></tr>
+                                <tr><th class="text-muted small">Food Start</th><td>{{ t.food_start_date or '—' }}</td></tr>
+                                <tr><th class="text-muted small">Monthly Rent</th>
+                                    <td class="fw-semibold text-primary">&#8377;{{ '{:,.0f}'.format(t.monthly_rent) }}/month</td>
+                                </tr>
+                                {% if t.rent_breakdown %}
+                                <tr><th class="text-muted small">1st Month Bill</th>
+                                    <td>
+                                        <span class="fw-bold text-danger">&#8377;{{ '{:,.0f}'.format(t.rent_breakdown.total_prorated) }}</span>
+                                        <small class="text-muted ms-1">({{ t.rent_breakdown.days_charged }}/{{ t.rent_breakdown.days_in_month }} days)</small>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                <tr><th class="text-muted small">Advance Paid</th><td class="text-success fw-semibold">&#8377;{{ adv_paid | int }}</td></tr>
+                                <tr><th class="text-muted small">Remaining</th>
+                                    <td class="{% if adv_rem <= 0 %}text-success{% else %}text-danger{% endif %} fw-semibold">
+                                        &#8377;{{ adv_rem | int }}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        {% if t.notes %}
+                        <div class="col-12">
+                            <small class="text-muted"><i class="bi bi-sticky me-1"></i>{{ t.notes }}</small>
+                        </div>
+                        {% endif %}
+                        <div class="col-12 d-flex gap-2">
+                            <a href="/tenant/edit/{{ t.id }}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            <form method="post" action="/tenant/delete/{{ t.id }}" class="d-inline"
+                                  onsubmit="return confirm('Remove {{ t.name }} from this room?');">
+                                <button class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash me-1"></i>Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-people fs-1 d-block mb-2 opacity-25"></i>
+            No students in this room yet.
+            <br>
+            <a href="/tenant/add?room_id={{ room.id }}" class="btn btn-primary mt-3">
+                <i class="bi bi-person-plus me-1"></i>Add First Student
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

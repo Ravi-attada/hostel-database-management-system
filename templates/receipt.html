@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Receipt - Bhavani Residency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: white !important; }
+            .print-border { border: 1px solid #e2e8f0 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col items-center py-10 font-sans text-slate-800">
+
+    <div class="no-print w-full max-w-2xl flex justify-between items-center mb-6 px-4">
+        <a href="javascript:history.back()" class="flex items-center text-slate-500 hover:text-slate-800 transition-colors font-medium">
+            <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Back
+        </a>
+        <button onclick="window.print()" class="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all">
+            <i data-lucide="printer" class="w-5 h-5 mr-2"></i> Print Receipt
+        </button>
+    </div>
+
+    <div class="bg-white w-full max-w-2xl p-10 rounded-3xl shadow-xl border border-slate-100 print-border relative overflow-hidden">
+        <!-- Decorative Header Background -->
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-r from-blue-600 to-sky-400 opacity-10"></div>
+        
+        <div class="flex justify-between items-start relative z-10">
+            <div class="flex items-center">
+                <div class="w-16 h-16 bg-gradient-to-tr from-sky-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg mr-4">
+                    <i data-lucide="building-2" class="w-8 h-8 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-black text-slate-800 tracking-tight">Bhavani Residency</h1>
+                    <p class="text-slate-500 font-medium">Payment Receipt</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Receipt No.</p>
+                <p class="text-xl font-black text-slate-800">#BR-{{ payment.id|string|rjust(5, '0') }}</p>
+            </div>
+        </div>
+
+        <div class="mt-12 grid grid-cols-2 gap-8 relative z-10">
+            <div>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Billed To</p>
+                <p class="text-lg font-bold text-slate-800">{{ payment.tenant_name }}</p>
+                <p class="text-slate-500 font-medium mt-1">Room: {{ payment.room_label }} (Floor {{ payment.floor }})</p>
+                <p class="text-slate-500 font-medium">Phone: {{ payment.phone }}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Payment Info</p>
+                <p class="text-slate-800 font-bold">Month: <span class="text-blue-600">{{ payment.rent_month }}</span></p>
+                <p class="text-slate-500 font-medium mt-1">Date: {{ payment.payment_date }}</p>
+                <p class="text-slate-500 font-medium">Time: {{ payment.payment_timestamp }}</p>
+                <div class="inline-flex items-center mt-3 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-sm font-bold border border-emerald-200">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 mr-1"></i> Paid Successfully
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 border-t border-slate-100 pt-8 relative z-10">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-slate-400 text-sm uppercase tracking-wider">
+                        <th class="pb-4 font-bold">Description</th>
+                        <th class="pb-4 font-bold text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    <tr>
+                        <td class="py-4 font-medium text-slate-800">Monthly Rent Payment ({{ payment.rent_month }})</td>
+                        <td class="py-4 font-black text-right text-slate-800">&#8377;{{ "{:,.2f}".format(payment.amount_paid) }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="pt-6 font-bold text-slate-500 text-right pr-6 uppercase tracking-wider">Total Paid</td>
+                        <td class="pt-6 font-black text-3xl text-blue-600 text-right">&#8377;{{ "{:,.2f}".format(payment.amount_paid) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="mt-16 text-center text-sm text-slate-400 font-medium relative z-10">
+            <p>Thank you for your payment!</p>
+            <p class="mt-1 text-slate-300">This is a computer-generated receipt and does not require a signature.</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

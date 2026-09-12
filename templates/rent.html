@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-xl">
+    <div class="flex items-center space-x-3">
+      <div class="bg-blue-100 p-2 rounded-lg">
+        <i data-lucide="wallet" class="w-6 h-6 text-blue-600"></i>
+      </div>
+      <h2 class="text-xl font-bold text-slate-800 dark:text-white">Monthly Rent Collection</h2>
+    </div>
+    
+    <div class="flex items-center space-x-3">
+      <button onclick="document.getElementById('qrModal').classList.remove('hidden')" class="bg-[#5f259f] hover:bg-[#4a1c7c] text-white px-4 py-2 rounded-lg font-bold flex items-center shadow-lg transition-all hover:scale-105">
+        <i data-lucide="qr-code" class="w-5 h-5 mr-2"></i> PhonePe: 8074177332
+      </button>
+      <form method="GET" class="flex items-center space-x-4">
+        <input type="month" name="month" value="{{ month }}" class="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="this.form.submit()">
+      </form>
+    </div>
+
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="glass-card p-5 border-l-4 border-l-slate-400">
+      <div class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Total Expected</div>
+      <div class="text-3xl font-black text-slate-800 dark:text-white">&#8377;{{ "{:,}".format(total_due) }}</div>
+    </div>
+    <div class="glass-card p-5 border-l-4 border-l-emerald-500">
+      <div class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Total Collected</div>
+      <div class="text-3xl font-black text-emerald-600 dark:text-emerald-400">&#8377;{{ "{:,}".format(total_paid) }}</div>
+    </div>
+    <div class="glass-card p-5 border-l-4 border-l-rose-500">
+      <div class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Total Pending</div>
+      <div class="text-3xl font-black text-rose-600 dark:text-rose-400">&#8377;{{ "{:,}".format(total_balance) }}</div>
+    </div>
+  </div>
+
+  <div class="glass-panel rounded-xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200/50 dark:border-slate-700/50 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+            <th class="p-4">Student</th>
+            <th class="p-4">Room</th>
+            <th class="p-4">Amount Due</th>
+            <th class="p-4">Amount Paid</th>
+            <th class="p-4">Balance</th>
+            <th class="p-4 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+          {% if collection|length == 0 %}
+            <tr><td colspan="6" class="p-8 text-center text-slate-500">No rent records found.</td></tr>
+          {% else %}
+            {% for c in collection %}
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+              <td class="p-4">
+                <div class="font-bold text-slate-800 dark:text-white">{{ c.tenant.name }}</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">{{ c.tenant.phone }}</div>
+              </td>
+              <td class="p-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
+                  {{ c.tenant.room_label }}
+                </span>
+              </td>
+              <td class="p-4 font-semibold text-slate-700 dark:text-slate-300">&#8377;{{ "{:,}".format(c.due) }}</td>
+              <td class="p-4 font-semibold text-emerald-600 dark:text-emerald-400">&#8377;{{ "{:,}".format(c.paid) }}</td>
+              <td class="p-4 font-bold {{ 'text-rose-600 dark:text-rose-400' if c.balance > 0 else 'text-emerald-600 dark:text-emerald-400' }}">
+                &#8377;{{ "{:,}".format(c.balance) }}
+              </td>
+              <td class="p-4 text-center">
+                {% if c.balance > 0 %}
+                <form action="/rent/pay" method="POST" class="flex flex-col gap-2 items-center w-32 mx-auto" onsubmit="return confirm('Confirm payment of ?{{ c.balance|int }} for {{ c.tenant.name|replace("'", "") }}?');">
+    <input type="hidden" name="tenant_id" value="{{ c.tenant.id }}">
+    <input type="hidden" name="rent_month" value="{{ month }}">
+    <input type="hidden" name="amount" value="{{ c.balance }}">
+    <input type="date" name="payment_date" value="{{ today }}" required class="w-full text-xs px-2 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500">
+    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-bold transition-colors shadow-sm">Pay ?{{ c.balance|int }}</button>
+</form>
+                {% else %}
+                <span class="inline-flex items-center text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 mr-1"></i> Paid
+                </span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>setTimeout(() => lucide.createIcons(), 100);</script>
+
+  <!-- PhonePe QR Modal -->
+  <div id="qrModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onclick="if(event.target === this) this.classList.add('hidden')">
+    <div class="glass-card bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-sm w-full relative shadow-2xl border border-white/20 text-center">
+      <button onclick="document.getElementById('qrModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      
+      <div class="w-16 h-16 bg-[#5f259f] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#5f259f]/40">
+        <i data-lucide="smartphone" class="w-8 h-8 text-white"></i>
+      </div>
+      
+      <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Scan to Pay</h3>
+      <p class="text-slate-500 dark:text-slate-400 mb-6 font-medium">Bhavani Residency</p>
+      
+      <div class="bg-white p-4 rounded-xl inline-block border-4 border-[#5f259f] shadow-inner">
+        <!-- Using a generated UPI QR Code for generic VPA assuming @ybl -->
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=8074177332@ybl%26pn=Bhavani%20Residency" alt="PhonePe QR Code" class="w-48 h-48 mx-auto object-contain">
+      </div>
+      
+      <div class="mt-6 bg-slate-50 dark:bg-slate-800 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold mb-1">PhonePe / UPI Number</p>
+        <p class="text-2xl font-black text-[#5f259f] dark:text-[#a674e3]">8074177332</p>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

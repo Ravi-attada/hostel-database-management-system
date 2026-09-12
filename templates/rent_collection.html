@@ -1,0 +1,141 @@
+﻿{% extends "base.html" %}
+{% block title %}Monthly Rent Collection{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center mb-4">
+    <h2 class="fw-bold mb-0"><i class="bi bi-wallet2 me-2 text-primary"></i>Monthly Rent Collection</h2>
+    
+    <form class="ms-auto d-flex align-items-center gap-2" method="get" action="/rent">
+        <label class="fw-semibold text-muted mb-0 text-nowrap">Select Month:</label>
+        <input type="month" class="form-control" name="month" value="{{ month }}" onchange="this.form.submit()">
+    </form>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-light">
+            <div class="card-body">
+                <div class="text-muted small fw-semibold">Total Expected</div>
+                <div class="fs-3 fw-bold">&#8377;{{ '{:,.0f}'.format(total_due) }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body">
+                <div class="text-white-50 small fw-semibold">Total Collected</div>
+                <div class="fs-3 fw-bold">&#8377;{{ '{:,.0f}'.format(total_paid) }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-danger text-white">
+            <div class="card-body">
+                <div class="text-white-50 small fw-semibold">Total Pending</div>
+                <div class="fs-3 fw-bold">&#8377;{{ '{:,.0f}'.format(total_balance) }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student</th>
+                        <th>Room</th>
+                        <th>Amount Due</th>
+                        <th>Amount Paid</th>
+                        <th>Balance</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for c in collection %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">{{ c.tenant.name }}</div>
+                            <div class="small text-muted">{{ c.tenant.phone }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ c.tenant.room_label }}</span>
+                        </td>
+                        <td class="fw-semibold">&#8377;{{ '{:,.0f}'.format(c.due) }}</td>
+                        <td class="text-success fw-semibold">&#8377;{{ '{:,.0f}'.format(c.paid) }}</td>
+                        <td>
+                            {% if c.balance <= 0 %}
+                                <span class="badge bg-success">Paid ✓</span>
+                            {% else %}
+                                <span class="fw-bold text-danger">&#8377;{{ '{:,.0f}'.format(c.balance) }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if c.balance > 0 %}
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#payModal{{ c.tenant.id }}">
+                                <i class="bi bi-currency-rupee"></i> Pay
+                            </button>
+                            
+                            <!-- Payment Modal -->
+                            <div class="modal fade" id="payModal{{ c.tenant.id }}" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content border-0 shadow">
+                                        <form method="post" action="/rent/pay">
+                                            <div class="modal-header bg-primary text-white border-0">
+                                                <h5 class="modal-title"><i class="bi bi-wallet2 me-2"></i>Record Payment</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-4">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-7">
+                                                        <div class="mb-3">
+                                                            <div class="text-muted small">Student</div>
+                                                            <div class="fw-semibold fs-5">{{ c.tenant.name }}</div>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <div class="text-muted small">Pending Balance</div>
+                                                            <div class="fw-bold text-danger fs-4">&#8377;{{ '{:,.0f}'.format(c.balance) }}</div>
+                                                        </div>
+                                                        <input type="hidden" name="tenant_id" value="{{ c.tenant.id }}">
+                                                        <input type="hidden" name="rent_month" value="{{ month }}">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">Amount Paying Now</label>
+                                                            <input type="number" name="amount" class="form-control form-control-lg" max="{{ c.balance }}" value="{{ c.balance }}" required>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label fw-semibold">Date</label>
+                                                            <input type="date" name="payment_date" class="form-control" value="{{ today }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-5 text-center border-start">
+                                                        <div class="small fw-bold text-muted mb-2"><i class="bi bi-qr-code-scan me-1"></i>Scan Exact Amount</div>
+                                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi%3A%2F%2Fpay%3Fpa%3D8074177332%40ybl%26pn%3DBhavani%20Residency%26am%3D{{ c.balance }}%26cu%3DINR" class="img-fluid border p-1 rounded shadow-sm" alt="QR Code">
+                                                        <div class="small fw-semibold text-primary mt-2">PhonePe: 8074177332</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-0 bg-light">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary px-4">Confirm Payment</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                                <button class="btn btn-sm btn-outline-secondary" disabled>Fully Paid</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No students required to pay rent for this month.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

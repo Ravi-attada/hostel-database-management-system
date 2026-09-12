@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+  <div class="glass-card p-6 rounded-2xl flex items-center shadow-lg border-b-4 border-b-blue-500">
+    <div class="bg-gradient-to-tr from-blue-500 to-indigo-500 p-3 rounded-xl shadow-lg shadow-blue-500/30 mr-4">
+      <i data-lucide="layout-dashboard" class="w-8 h-8 text-white"></i>
+    </div>
+    <div class="flex-1">
+      <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Hostel Overview</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Key metrics for Bhavani Residency.</p>
+    </div>
+    <div>
+      <a href="/export" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center transition-all shadow-lg shadow-emerald-500/30">
+        <i data-lucide="download" class="w-5 h-5 mr-2"></i> Export Excel
+      </a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-all">
+      <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Total Beds</div>
+      <div class="text-2xl font-black text-slate-800 dark:text-white">{{ stats.total_capacity }}</div>
+    </div>
+    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-emerald-500 shadow-sm hover:shadow-md transition-all">
+      <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Occupied</div>
+      <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ stats.total_occupied }}</div>
+    </div>
+    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-rose-500 shadow-sm hover:shadow-md transition-all">
+      <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Vacant</div>
+      <div class="text-2xl font-black text-rose-600 dark:text-rose-400">{{ stats.total_capacity - stats.total_occupied }}</div>
+    </div>
+    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-violet-500 shadow-sm hover:shadow-md transition-all">
+      <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Advance Held (To Refund)</div>
+      <div class="text-2xl font-black text-violet-600 dark:text-violet-400">&#8377;{{ "{:,}".format(stats.advance_paid) }}</div>
+    </div>
+    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-orange-500 shadow-sm hover:shadow-md transition-all">
+      <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Adv. Pending</div>
+      <div class="text-2xl font-black text-orange-600 dark:text-orange-400">&#8377;{{ "{:,}".format(stats.advance_pending) }}</div>
+    </div>
+    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-rose-600 shadow-sm hover:shadow-md transition-all bg-rose-50/50 dark:bg-rose-900/10">
+      <div class="text-xs font-semibold text-rose-600 dark:text-rose-400 mb-1">Rent Pending</div>
+      <div class="text-2xl font-black text-rose-600 dark:text-rose-400">&#8377;{{ "{:,}".format(summary.pending) }}</div>
+    </div>
+  </div>
+  
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    <div class="glass-card p-6 rounded-2xl shadow-sm border border-white/20 dark:border-slate-700/50">
+      <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-700/50 pb-3">Monthly Collection ({% for m in all_months %}{% if m.value == current_yyyy_mm %}{{ m.label }}{% endif %}{% endfor %})</h3>
+      <div class="space-y-4">
+        <div class="flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50 p-4 rounded-xl">
+          <span class="text-slate-600 dark:text-slate-400 font-semibold">Expected Total</span>
+          <span class="font-black text-xl text-slate-800 dark:text-white">&#8377;{{ "{:,}".format(summary.expected) }}</span>
+        </div>
+        <div class="flex justify-between items-center bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800/50">
+          <span class="text-emerald-600 dark:text-emerald-400 font-semibold">Collected</span>
+          <span class="font-black text-xl text-emerald-600 dark:text-emerald-400">&#8377;{{ "{:,}".format(summary.collected) }}</span>
+        </div>
+        <div class="flex justify-between items-center bg-rose-50 dark:bg-rose-900/20 p-4 rounded-xl border border-rose-100 dark:border-rose-800/50">
+          <span class="text-rose-600 dark:text-rose-400 font-semibold">Pending</span>
+          <span class="font-black text-xl text-rose-600 dark:text-rose-400">&#8377;{{ "{:,}".format(summary.pending) }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass-card p-6 rounded-2xl shadow-sm border border-white/20 dark:border-slate-700/50">
+      <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-100 dark:border-slate-700/50 pb-3">Quick Actions</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <a href="/tenant/add" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 rounded-xl text-center shadow-md transition-all hover:-translate-y-1">
+          <i data-lucide="user-plus" class="w-6 h-6 mx-auto mb-2"></i>
+          Add Student
+        </a>
+        <a href="/rent" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-4 rounded-xl text-center shadow-md transition-all hover:-translate-y-1">
+          <i data-lucide="wallet" class="w-6 h-6 mx-auto mb-2"></i>
+          Collect Rent
+        </a>
+        <a href="/floor/1" class="bg-violet-600 hover:bg-violet-700 text-white font-medium py-4 rounded-xl text-center shadow-md transition-all hover:-translate-y-1">
+          <i data-lucide="home" class="w-6 h-6 mx-auto mb-2"></i>
+          View Rooms
+        </a>
+        <a href="/rent-config" class="bg-slate-700 hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500 text-white font-medium py-4 rounded-xl text-center shadow-md transition-all hover:-translate-y-1">
+          <i data-lucide="settings" class="w-6 h-6 mx-auto mb-2"></i>
+          Settings
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>setTimeout(() => lucide.createIcons(), 100);</script>
+
+    <!-- Pending Dues Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      
+      <!-- Rent Pending List -->
+      <div class="glass-card p-6 rounded-2xl shadow-sm border border-rose-100 dark:border-rose-900/30">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-700/50 pb-3">
+          <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center">
+            <i data-lucide="alert-circle" class="w-5 h-5 text-rose-500 mr-2"></i> 
+            Rent Pending
+          </h3>
+          <div class="flex items-center space-x-3">
+            <form id="monthForm" action="/dashboard" method="GET" class="m-0">
+              <select name="month" onchange="document.getElementById('monthForm').submit()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-2 py-1 focus:outline-none focus:ring-2 focus:ring-rose-500 text-slate-700 dark:text-slate-200 cursor-pointer shadow-sm">
+                {% for m in all_months %}
+                  <option value="{{ m.value }}" {% if m.value == current_yyyy_mm %}selected{% endif %}>{{ m.label }}</option>
+                {% endfor %}
+              </select>
+            </form>
+            <span class="bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-400 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">{{ rent_pending_list|length }}</span>
+          </div>
+        </div>
+        
+        <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          {% if rent_pending_list %}
+            {% for item in rent_pending_list %}
+            <a href="/tenant/view/{{ item.tenant.id }}" class="flex justify-between items-center bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-rose-300 dark:hover:border-rose-700 transition-colors group">
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-bold flex items-center justify-center text-xs mr-3">
+                  {{ item.tenant.name[0]|upper }}
+                </div>
+                <div>
+                  <div class="font-bold text-sm text-slate-800 dark:text-white group-hover:text-rose-600 transition-colors">{{ item.tenant.name }}</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">Room {{ item.tenant.room_id }}</div>
+                </div>
+              </div>
+              <div class="font-black text-rose-600 dark:text-rose-400 text-sm">&#8377;{{ "{:,}".format(item.balance) }}</div>
+            </a>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-sm font-medium">No rent pending this month! ??</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Advance Pending List -->
+      <div class="glass-card p-6 rounded-2xl shadow-sm border border-orange-100 dark:border-orange-900/30">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-100 dark:border-slate-700/50 pb-3">
+          <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center">
+            <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-500 mr-2"></i> 
+            Advance Pending
+          </h3>
+          <span class="bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400 text-xs font-bold px-2.5 py-1 rounded-full">{{ advance_pending_list|length }}</span>
+        </div>
+        
+        <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          {% if advance_pending_list %}
+            {% for item in advance_pending_list %}
+            <a href="/tenant/view/{{ item.tenant.id }}" class="flex justify-between items-center bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-700 transition-colors group">
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 font-bold flex items-center justify-center text-xs mr-3">
+                  {{ item.tenant.name[0]|upper }}
+                </div>
+                <div>
+                  <div class="font-bold text-sm text-slate-800 dark:text-white group-hover:text-orange-600 transition-colors">{{ item.tenant.name }}</div>
+                  <div class="text-xs text-slate-500 dark:text-slate-400">Room {{ item.tenant.room_id }}</div>
+                </div>
+              </div>
+              <div class="font-black text-orange-600 dark:text-orange-400 text-sm">&#8377;{{ "{:,}".format(item.pending) }}</div>
+            </a>
+            {% endfor %}
+          {% else %}
+            <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-sm font-medium">All advances are fully paid! ??</div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+{% endblock %}

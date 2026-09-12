@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+  <div class="glass-card p-6 rounded-2xl flex items-center shadow-lg border-b-4 border-b-blue-500">
+    <div class="bg-gradient-to-tr from-blue-500 to-indigo-500 p-3 rounded-xl shadow-lg shadow-blue-500/30 mr-4">
+      <i data-lucide="user-plus" class="w-8 h-8 text-white"></i>
+    </div>
+    <div>
+      <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Onboard New Student</h2>
+      <p class="text-slate-500 dark:text-slate-400 mt-1">Register tenant, calculate prorated rent, and collect advance.</p>
+    </div>
+  </div>
+
+  <form method="POST" class="flex flex-col lg:flex-row gap-6">
+    <!-- Left Side: Form Fields -->
+    <div class="flex-1 space-y-6">
+      <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/50">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-700/50 pb-3">Personal & Room Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+              <i data-lucide="user" class="w-4 h-4 mr-2 text-blue-500"></i> Student Name <span class="text-rose-500 ml-1">*</span>
+            </label>
+            <input required type="text" name="name" placeholder="Full Name" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+              <i data-lucide="users" class="w-4 h-4 mr-2 text-indigo-500"></i> Father/Mother Name
+            </label>
+            <input type="text" name="father_name" placeholder="Parent's Name" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Village</label>
+            <input type="text" name="village" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Mandalam</label>
+            <input type="text" name="mandalam" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">District</label>
+            <input type="text" name="district" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">College</label>
+            <select name="college" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all">
+                <option value="">-- Select College --</option>
+                <option value="Raghu Engineering College">Raghu Engineering College</option>
+                <option value="Lendi">Lendi</option>
+                <option value="NSRIET">NSRIET</option>
+                <option value="MVGR">MVGR</option>
+                <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Year of Study</label>
+            <select name="study_year" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all">
+                <option value="">-- Select Year --</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+                <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Branch</label>
+            <select name="branch" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all">
+                <option value="">-- Select Branch --</option>
+                <option value="CSE">CSE</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="MECH">MECH</option>
+                <option value="CIVIL">CIVIL</option>
+                <option value="IT">IT</option>
+                <option value="CSM">CSM</option>
+                <option value="CSD">CSD</option>
+                <option value="AI&ML">AI&ML</option>
+                <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+              <i data-lucide="phone" class="w-4 h-4 mr-2 text-teal-500"></i> Student Phone <span class="text-rose-500 ml-1">*</span>
+            </label>
+            <input required type="text" name="phone" placeholder="10-digit" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+              <i data-lucide="phone" class="w-4 h-4 mr-2 text-teal-500"></i> Parents Phone
+            </label>
+            <input type="text" name="parent_phone" placeholder="10-digit" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300">Aadhar No.</label>
+            <input type="text" name="aadhar_no" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all">
+          </div>
+        </div>
+
+        <div class="space-y-2 mb-6">
+          <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+            <i data-lucide="bed-double" class="w-4 h-4 mr-2 text-violet-500"></i> Assign Room <span class="text-rose-500 ml-1">*</span>
+          </label>
+          <select required name="room_id" id="roomId" onchange="updateRentPreview()" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+            <option value="">-- Select an Available Room --</option>
+            
+            {% for r in rooms %}
+              <option value="{{ r.id }}">Floor {{ r.floor }} - Room {{ r.id }} ({{ 'AC' if r.is_ac else 'Non-AC' }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+              <i data-lucide="calendar" class="w-4 h-4 mr-2 text-slate-500"></i> Joining Date <span class="text-rose-500 ml-1">*</span>
+            </label>
+            <input required type="date" name="join_date" value="{{ today }}" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-slate-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition-all">
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+              <i data-lucide="calendar" class="w-4 h-4 mr-2 text-orange-500"></i> Food/Rent Start Date <span class="text-rose-500 ml-1">*</span>
+            </label>
+            <input required type="date" name="food_start_date" id="foodStartDate" value="{{ today }}" onchange="updateRentPreview()" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-2.5 text-slate-800 dark:text-white focus:ring-2 focus:ring-orange-500 transition-all">
+          </div>
+        </div>
+        
+        <div class="space-y-2 mt-6">
+          <label class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center">
+            <i data-lucide="file-text" class="w-4 h-4 mr-2 text-amber-500"></i> Additional Notes
+          </label>
+          <textarea name="notes" rows="2" placeholder="Any other info." class="w-full bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-600 rounded-xl px-4 py-3 text-slate-800 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"></textarea>
+        </div>
+      </div>
+      
+      <div class="glass-panel p-8 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/50">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-700/50 pb-3">Advance Payment</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="text-sm font-bold text-slate-500 dark:text-slate-400 block mb-2">Total Required</label>
+            <div class="bg-slate-100 dark:bg-slate-800 px-4 py-3 rounded-xl font-black text-xl text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 flex items-center">
+              &#8377;<span id="advanceTotalDisplay">10,000</span>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-bold text-emerald-600 dark:text-emerald-400 block mb-2">Advance Paid Now</label>
+            <div class="relative">
+              <span class="absolute left-4 top-3 font-black text-slate-400">&#8377;</span>
+              <input type="number" name="advance_paid" id="advancePaid" value="0" min="0" step="1" oninput="calcRemaining()" class="w-full pl-8 pr-4 py-3 bg-white dark:bg-slate-900 border-2 border-emerald-500 rounded-xl font-black text-xl text-slate-800 dark:text-white focus:outline-none focus:ring-4 focus:ring-emerald-500/20">
+            </div>
+          </div>
+          <div>
+            <label class="text-sm font-bold text-rose-500 dark:text-rose-400 block mb-2">Remaining</label>
+            <div id="advanceRemaining" class="px-4 py-3 rounded-xl font-black text-xl border bg-rose-50 dark:bg-rose-900/20 text-rose-600 border-rose-200 dark:border-rose-800">
+              &#8377;10,000
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" name="advance_total" value="10000">
+      <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center transition-all hover:-translate-y-1 text-lg">
+        <i data-lucide="save" class="w-6 h-6 mr-2"></i> Add Student to Hostel
+      </button>
+    </div>
+
+    <!-- Right Side: Prorated Rent Preview -->
+    <div class="w-full lg:w-[400px] space-y-6">
+      <div class="glass-card p-6 rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50">
+        <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center mb-4">
+          <i data-lucide="info" class="w-5 h-5 mr-2 text-sky-500"></i> Monthly Rent Calculation
+        </h3>
+        <div id="rentBreakdown" class="text-center text-slate-500 py-8">Select Food Start Date and Room to calculate rent</div>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<script>
+window.advanceTotal = 10000;
+
+function updateRentPreview() {
+    var foodDate = document.getElementById('foodStartDate').value;
+    var roomId = document.getElementById('roomId').value;
+    if (!foodDate || !roomId) {
+        document.getElementById('rentBreakdown').innerHTML = 'Select Food Start Date and Room to calculate rent';
+        return;
+    }
+
+    document.getElementById('rentBreakdown').innerHTML = '<div class="text-sky-500 py-8 font-bold">Calculating...</div>';
+
+    fetch('/api/rent-preview?food_date=' + foodDate + '&room_id=' + encodeURIComponent(roomId))
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.error) {
+            document.getElementById('rentBreakdown').innerHTML = '<div class="text-rose-500 py-8">Error calculating rent.</div>';
+            return;
+        }
+
+        var html = '<div class="space-y-6">' +
+          '<div class="bg-sky-50 dark:bg-sky-900/20 p-4 rounded-xl border border-sky-100 dark:border-sky-800">' +
+            '<div class="font-bold text-sky-800 dark:text-sky-300 mb-1">' + data.month_label + ' - First Month Bill</div>' +
+            '<div class="text-sm text-sky-600 dark:text-sky-400">' +
+              'Charged for <strong>' + data.days_charged + '</strong> out of <strong>' + data.days_in_month + '</strong> days.' +
+            '</div>' +
+            '<div class="text-4xl font-black text-sky-600 dark:text-sky-400 mt-4">' +
+              '&#8377;' + Number(data.total_prorated).toLocaleString('en-IN') +
+            '</div>' +
+            '<div class="text-xs text-sky-500 mt-2 font-medium">From next month: &#8377;' + Number(data.total_full).toLocaleString('en-IN') + '/month</div>' +
+          '</div>' +
+          '<div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50">' +
+            '<table class="w-full text-left text-sm">' +
+              '<thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">' +
+                '<tr>' +
+                  '<th class="px-4 py-3 font-semibold">Component</th>' +
+                  '<th class="px-4 py-3 font-semibold">Full</th>' +
+                  '<th class="px-4 py-3 font-semibold">Prorated</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 bg-white/50 dark:bg-slate-900/50">' +
+                '<tr>' +
+                  '<td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">Room</td>' +
+                  '<td class="px-4 py-3 text-slate-600 dark:text-slate-400">&#8377;' + Number(data.room_rent_full).toLocaleString('en-IN') + '</td>' +
+                  '<td class="px-4 py-3 font-bold text-slate-800 dark:text-slate-200">&#8377;' + Number(data.room_prorated).toLocaleString('en-IN') + '</td>' +
+                '</tr>' +
+                '<tr>' +
+                  '<td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">Food</td>' +
+                  '<td class="px-4 py-3 text-slate-600 dark:text-slate-400">&#8377;' + Number(data.food_rent_full).toLocaleString('en-IN') + '</td>' +
+                  '<td class="px-4 py-3 font-bold text-slate-800 dark:text-slate-200">&#8377;' + Number(data.food_prorated).toLocaleString('en-IN') + '</td>' +
+                '</tr>' +
+                '<tr class="bg-slate-50/80 dark:bg-slate-800/80">' +
+                  '<td class="px-4 py-3 font-bold text-slate-800 dark:text-white">Total</td>' +
+                  '<td class="px-4 py-3 font-bold text-slate-800 dark:text-white">&#8377;' + Number(data.total_full).toLocaleString('en-IN') + '</td>' +
+                  '<td class="px-4 py-3 font-black text-blue-600 dark:text-blue-400">&#8377;' + Number(data.total_prorated).toLocaleString('en-IN') + '</td>' +
+                '</tr>' +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>';
+        
+        document.getElementById('rentBreakdown').innerHTML = html;
+
+        window.advanceTotal = data.advance_amount || 10000;
+        document.getElementById('advanceTotalDisplay').textContent = window.advanceTotal.toLocaleString('en-IN');
+        calcRemaining();
+
+    }).catch(function(e) { 
+        document.getElementById('rentBreakdown').innerHTML = '<div class="text-rose-500 py-8">Error: ' + e + '</div>';
+    });
+}
+
+function calcRemaining() {
+    var paid = parseFloat(document.getElementById('advancePaid').value) || 0;
+    var rem  = window.advanceTotal - paid;
+    var el   = document.getElementById('advanceRemaining');
+    el.innerHTML = '&#8377;' + rem.toLocaleString('en-IN');
+    if (rem <= 0) {
+      el.className = 'px-4 py-3 rounded-xl font-black text-xl border bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 border-emerald-200 dark:border-emerald-800';
+    } else {
+      el.className = 'px-4 py-3 rounded-xl font-black text-xl border bg-rose-50 dark:bg-rose-900/20 text-rose-600 border-rose-200 dark:border-rose-800';
+    }
+}
+
+window.onload = function() {
+    setTimeout(function() { if (typeof lucide !== "undefined") lucide.createIcons(); }, 100);
+    updateRentPreview();
+};
+</script>
+
+{% endblock %}
